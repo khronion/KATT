@@ -25,6 +25,7 @@ import datetime
 import ntplib
 import colorama
 import random
+import socket
 from pathlib import Path
 from colorama import Fore, Back, Style
 from bs4 import BeautifulSoup
@@ -36,6 +37,9 @@ RELEASEDATE = "15 May 2019"
 
 # global API cooldown.
 cooldown = 0.6
+
+# minor update length, seconds
+minor_length = 53 * 60
 
 # initialize colorama
 colorama.init()
@@ -119,9 +123,24 @@ while True:
 verification_content = BeautifulSoup(verification_response, "lxml-xml")
 message("Nation verified as " + verification_content.FULLNAME.string + ".")
 
+# Choose major or minor update mode
+message("Select the update mode RATT should run in. If this is set wrong,", kind="query")
+message("triggers will fire too quickly or too slowly.", kind="query")
+message("   1 - Major", kind="query")
+message("   2 - Minor", kind="query")
+
+major_update = None
+while True:
+    response = query("Update mode (1 or 2): ")
+    if response in ("1", "2"):
+        major_update = {"1": True, "2": False}[response]
+        break
+
 # Get trigger information
 try:
-    trigger_length = int(query("What trigger length should KATT use? "))
+    message("To disable trigger finding and instead monitor a listed region,", kind="query")
+    message("set trigger interval to 0.", kind="query")
+    trigger_length = int(query("What trigger interval should RATT use? "))
     if trigger_length > 12:
         message("Long triggers may be unreliable.", kind="warn")
 except ValueError:
@@ -185,12 +204,16 @@ while True:
         search_index = region_dict[target_region][1]  # index to check
         # print("search_index", search_index, "search_base", search_base)
         while not valid:
-            search_index -= 1  # walk back one.
+            if not major_update:
+                time_factor = minor_length / (lookup_list[-1][1] - lookup_list[0][1])  # ratio of minor update to major update
+            else:
+                time_factor = 1
             # print("lookup_list[search_index][1]", lookup_list[search_index][1])
             # print("search_base - lookup_list[search_index][1] ", search_base - lookup_list[search_index][1])
-            if search_base - lookup_list[search_index][1] >= trigger_length:  # if the target is far enough back...
+            if search_base - lookup_list[search_index][1] >= trigger_length / time_factor:  # if the target is far enough back...
                 trigger_region = lookup_list[search_index][0]  # store its name.
                 valid = True
+            search_index -= 1  # walk back one.
     except IndexError:
         message("{} is too early in update. No valid triggers found.".format(target_region), kind="error")
     except KeyError:
@@ -217,7 +240,7 @@ while True:
             # time between the start of major and minor update (12 hours).
             try:
                 current_time = int(ntp_client.request('pool.ntp.org').orig_time)
-            except ntplib.NTPException:
+            except socket.timeout:
                 try:
                     current_time = int(ntp_client.request('time.nist.org').orig_time)
 
