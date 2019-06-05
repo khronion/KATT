@@ -1,11 +1,15 @@
-# KATT
+# KATT and RATT
 
-*Khron and Atagait's Trigger Tool*
+*Khron and Atagait's Trigger Tool* and the *Really Awful Trigger Tool*
 
 ## About
 
 KATT is a simple script that takes a list of NationStates regions, sorts them by update order, and informs the user when
 the game API reports they have updated.
+
+RATT is a Python script that asks a user for a region, finds a suitable trigger region based on a preset trigger length, and monitors the trigger region for an update event.
+
+RATT-generated triggers are identical to those made using a Spyglass sheet. RATT uses the `regions.xml.gz` API dump to automate the process of looking through a sheet to find a region that updates a certain number of seconds before the target. As a result, it its triggers are subject to a certain degree of error. If accuracy is critical, KATT or Deadeye should be used instead, in conjunction with a manual trigger, preferrably with several backup triggers.
 
 ## Running KATT
 
@@ -30,6 +34,14 @@ list, until all regions have updated.
 
 If a region has already updated during the current update, KATT will detect this and remove it from the list.
 
+## Running RATT
+
+RATT has the same requirements as KATT.
+
+When started, RATT will ask the user to provide a valid nation and ask the user to specify whether it is being used during a major or minor update. It will then ask the user to set a trigger length. Using 0 as the trigger length disables trigger finding and causes RATT to function similar to KATT or Deadeye. After that, it will download the latest `regions.xml.gz` API dump, or offer to update one if it already exists. This can take over a minute on older systems with limited processor power.
+
+RATT will then ask the user to enter a target region. It will automatically find a trigger region and begin tracking it until an update event is detected. When an update event is detected, it prints a notification to the screen before asking the user to select a new target. If the target region has updated in the last two hours, RATT will warn the user instead.
+
 ## Acknowledgments
 
 The following people provided key contributions during the initial development process:
@@ -42,7 +54,7 @@ The following people also helped review and test KATT:
 
 * Azaelai provided initial usability review and field testing
 * Felt provided additional feature feedback
-* Chris got triggered during the review process, go lie down before you hurt yourself
+* Chris got triggered during the review process (go lie down before you hurt yourself Chris)
 * Jay offered nice sentiments during the initial review
 
 ## Disclaimer
