@@ -200,7 +200,7 @@ try:
     current_time = int(ntp_client.request('pool.ntp.org').orig_time)
 except ntplib.NTPException:
     try:
-        current_time = int(ntp_client.request('time.nist.org').orig_time)
+        current_time = int(ntp_client.request('time.nist.gov').orig_time)
 
     # If no authoritative time server can be found, KATT will default to the system time and warn the user that an
     # inaccurate clock can cause problems.

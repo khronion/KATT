@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with the software.  If not, see <http://www.gnu.org/licenses/>.
-#
+
 import urllib.request
 import urllib.error
 import shutil
@@ -32,8 +32,8 @@ from bs4 import BeautifulSoup
 from collections import OrderedDict
 
 # Update these when a new revision is released
-VERSION = "0.1"
-RELEASEDATE = "15 May 2019"
+VERSION = "0.3"
+RELEASEDATE = "18 June 2019"
 
 # global API cooldown.
 cooldown = 0.6
@@ -73,6 +73,49 @@ def query(text):
     return resp.lower().replace(" ", "_").replace("\n", "")
 
 
+def random_name():
+    r = ['really',
+         'rabid',
+         'rax\'s',
+         'rach\'s',
+         'razorable',
+         'ripe',
+         'reeking',
+         'retrograde',
+         'reverse',
+         'rotten',
+         'rare']
+    a = ['awesome',
+         'awful',
+         'atrocious',
+         'adventurous',
+         'advantageous',
+         'asinine',
+         'accurate',
+         'arbitrary',
+         'agonizing',
+         'alternative']
+    t = ['trigger',
+         'trap',
+         'trinket',
+         'totem',
+         'tail',
+         'tale',
+         'table',
+         'teapot',
+         'thot',
+         'thought',
+         'tricycle',
+         'tool',
+         'tangent']
+
+    return "{} {} {} {}".format(
+        random.choice(r).capitalize(),
+        random.choice(a).capitalize(),
+        random.choice(t).capitalize(),
+        random.choice(t).capitalize()
+    )
+
 message("""
 ooooooooo.         .o.       ooooooooooooo ooooooooooooo 
 `888   `Y88.      .888.      8'   888   `8 8'   888   `8 
@@ -84,19 +127,20 @@ o888o  o888o o88o     o8888o     o888o         o888o
                                                        """, kind="none")
 
 intro_jokes = [
-    "Learn to use a sheet, ya dingus!",
-    "Back in my day, we did it with a text editor and the RSS feed...",
+    "Learn to trigger, ya dingus!",
     "Hit CTRL-W to move to region. It's a breeze!",
+    "RIP Violet Irises... We hardly knew ye...",
+    "If Mercury is in retrograde, update may be slower than expected."
 ]
 
-message("Really Awful Triggering Tool", kind="none")
-message(random.choice(intro_jokes), kind="none")
+message(random_name(), kind="none")
+message(random.choice(intro_jokes) + "\n", kind="none")
 message("Version " + VERSION + " - Released " + RELEASEDATE + "\n", kind="none")
 
 # Quick intro.
 message("When you see [ ENTER ] on the screen, RATT is waiting for you.")
 message("Read what the prompt says and type a response.")
-message("Type anything and hit ENTER to continue. ")
+query("Type anything and hit ENTER to continue. ")
 
 message("RATT uses the NationStates API. If you run it at the same time")
 message("as another API tool, you may hit the rate limit!")
@@ -211,6 +255,7 @@ while True:
             # print("lookup_list[search_index][1]", lookup_list[search_index][1])
             # print("search_base - lookup_list[search_index][1] ", search_base - lookup_list[search_index][1])
             if search_base - lookup_list[search_index][1] >= trigger_length / time_factor:  # if the target is far enough back...
+                trigger_time = lookup_list[search_index][1]
                 trigger_region = lookup_list[search_index][0]  # store its name.
                 valid = True
             search_index -= 1  # walk back one.
@@ -242,7 +287,7 @@ while True:
                 current_time = int(ntp_client.request('pool.ntp.org').orig_time)
             except socket.timeout:
                 try:
-                    current_time = int(ntp_client.request('time.nist.org').orig_time)
+                    current_time = int(ntp_client.request('time.nist.gov').orig_time)
 
                 # If no authoritative time server can be found, KATT will default to the system time and warn the user
                 # that an inaccurate clock can cause problems.
@@ -251,7 +296,7 @@ while True:
                     message("RATT may hang if computer time is inaccurate.", kind="warn")
                     message("If this happens, restart RATT and skip to next target.", kind="warn")
                     current_time = int(time.time())
-            message("Trigger region {} identified.".format(trigger_region))
+            message("Trigger region {} identified with trigger length {}s".format(trigger_region, search_base - trigger_time))
             if current_time - lastupdate < 7200:
                 message("TRIGGER REGION ALREADY UPDATED!", kind="go")
                 break
@@ -283,8 +328,8 @@ while True:
                     # API query. The interval between updates is set during initialization.
                     if updates % 5 == 0:
                         message(
-                            datetime.datetime.now().strftime('%H:%M:%S') + " Current target: {} (Trigger: {})".format(
-                                target_region, trigger_region))
+                            datetime.datetime.now().strftime('%H:%M:%S') + " Current target: {} ({}s Trigger: {})".format(
+                                target_region, search_base - trigger_time, trigger_region))
                     updates += 1
 
             # If KATT doesn't successfully connect to the API server, it will catch the error, wait 3 seconds, and then
@@ -293,6 +338,7 @@ while True:
                 message(datetime.datetime.now().strftime(
                     '%H:%M:%S') + " Could not connect to NationStates. Retrying in 3 seconds...", kind="warn")
                 time.sleep(3)
+        break
     if query("Continue? (Y/N) ") == 'n':
         message("Exiting.")
         break
