@@ -38,8 +38,10 @@ RELEASEDATE = "18 June 2019"
 # global API cooldown.
 cooldown = 0.6
 
-# minor update length, seconds
-minor_length = 53 * 60
+# update length variables
+# set up later from atagait's update length resource
+minor_length = None
+major_length = None
 
 # initialize colorama
 colorama.init()
@@ -152,7 +154,7 @@ while True:
     try:
         # use NS API to check if the nation in question exists.
         headers = dict()
-        headers['User-Agent'] = 'RATT/' + VERSION + ' (Developer=khronion@gmail.com; User=' + name + ')'
+        headers['User-Agent'] = 'RATT/' + VERSION + ' (Developer=atagait@hotmail.com; User=' + name + ')'
         time.sleep(0.6)
         verification_request = urllib.request.Request('https://www.nationstates.net/cgi-bin/api.cgi?nation=' + name,
                                                       headers=headers)
@@ -172,6 +174,11 @@ message("Select the update mode RATT should run in. If this is set wrong,", kind
 message("triggers will fire too quickly or too slowly.", kind="query")
 message("   1 - Major", kind="query")
 message("   2 - Minor", kind="query")
+
+with urllib.request.urlopen("https://atagait.com/python-bin/updateData.json") as Response:
+    Data = json.loads(Response.read())
+    minor_length = Data["minor"]["packer"] - Data["minor"]["banana"]
+    major_length = Data["major"]["packer"] - Data["major"]["banana"]
 
 major_update = None
 while True:
@@ -249,7 +256,7 @@ while True:
         # print("search_index", search_index, "search_base", search_base)
         while not valid:
             if not major_update:
-                time_factor = minor_length / (lookup_list[-1][1] - lookup_list[0][1])  # ratio of minor update to major update
+                time_factor = minor_length / major_length)  # ratio of minor update to major update
             else:
                 time_factor = 1
             # print("lookup_list[search_index][1]", lookup_list[search_index][1])
