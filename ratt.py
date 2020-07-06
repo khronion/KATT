@@ -22,7 +22,6 @@ import shutil
 import time
 import gzip
 import datetime
-import ntplib
 import colorama
 import random
 import socket
@@ -244,7 +243,6 @@ for region in region_dump.find_all("REGION"):
 # MAIN LOOP
 
 message("RATT initialization complete.")
-ntp_client = ntplib.NTPClient()
 while True:
     # select target
     target_region = query("Target Region: ")
@@ -291,19 +289,7 @@ while True:
             # 3 hours of the current time, we can be pretty certain that it updated during the current update. The
             # length of time used to filter needs to be greater than the length of major update but shorter than the
             # time between the start of major and minor update (12 hours).
-            try:
-                current_time = int(ntp_client.request('pool.ntp.org').orig_time)
-            except socket.timeout:
-                try:
-                    current_time = int(ntp_client.request('time.nist.gov').orig_time)
-
-                # If no authoritative time server can be found, KATT will default to the system time and warn the user
-                # that an inaccurate clock can cause problems.
-                except ntplib.NTPException:
-                    message("Could not connect to external time server.", kind="warn")
-                    message("RATT may hang if computer time is inaccurate.", kind="warn")
-                    message("If this happens, restart RATT and skip to next target.", kind="warn")
-                    current_time = int(time.time())
+            current_time = int(time.time())
             message("Trigger region {} identified with trigger length {}s".format(trigger_region, search_base - trigger_time))
             if current_time - lastupdate < 7200:
                 message("TRIGGER REGION ALREADY UPDATED!", kind="go")
