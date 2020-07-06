@@ -26,6 +26,7 @@ import ntplib
 import colorama
 import random
 import socket
+import json
 from pathlib import Path
 from colorama import Fore, Back, Style
 from bs4 import BeautifulSoup
@@ -256,7 +257,7 @@ while True:
         # print("search_index", search_index, "search_base", search_base)
         while not valid:
             if not major_update:
-                time_factor = minor_length / major_length)  # ratio of minor update to major update
+                time_factor = minor_length / major_length  # ratio of minor update to major update
             else:
                 time_factor = 1
             # print("lookup_list[search_index][1]", lookup_list[search_index][1])
