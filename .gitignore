@@ -69,3 +69,10 @@ dist/
 trigger_list.txt
 regions.xml.gz
 debug_log.txt
+
+# Visual Studio Code
+.vscode
+
+# Build results
+FatKATT/[Bb]in/
+FatKATT/[Oo]bj/
