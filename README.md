@@ -2,6 +2,10 @@
 
 *Khron and Atagait's Trigger Tool* and the *Really Awful Trigger Tool*
 
+**KATT and RATT are no longer maintained! Use [FattKATT](https://github.com/Vleerian/FattKATT) instead!**
+
+---
+
 ## About
 
 KATT is a simple script that takes a list of NationStates regions, sorts them by update order, and informs the user when
@@ -41,21 +45,6 @@ RATT has the same requirements as KATT.
 When started, RATT will ask the user to provide a valid nation and ask the user to specify whether it is being used during a major or minor update. It will then ask the user to set a trigger length. Using 0 as the trigger length disables trigger finding and causes RATT to function similar to KATT or Deadeye. After that, it will download the latest `regions.xml.gz` API dump, or offer to update one if it already exists. This can take over a minute on older systems with limited processor power.
 
 RATT will then ask the user to enter a target region. It will automatically find a trigger region and begin tracking it until an update event is detected. When an update event is detected, it prints a notification to the screen before asking the user to select a new target. If the target region has updated in the last two hours, RATT will warn the user instead.
-
-## Acknowledgments
-
-The following people provided key contributions during the initial development process:
-
-* Atagait created the ASCII art displayed when KATT runs
-* Teazle found a bug in the update failsafe logic
-* Souls provided feedback on program design and user interface
-
-The following people also helped review and test KATT:
-
-* Azaelai provided initial usability review and field testing
-* Felt provided additional feature feedback
-* Chris got triggered during the review process (go lie down before you hurt yourself Chris)
-* Jay offered nice sentiments during the initial review
 
 ## Disclaimer
 
